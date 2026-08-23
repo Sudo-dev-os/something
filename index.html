@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Sushmita! 💖</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;600&display=swap');
+
+        body {
+            margin: 0; padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            color: #333; text-align: center;
+            min-height: 100vh;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            width: 85%; max-width: 400px;
+            position: relative; z-index: 10;
+        }
+
+        h1, h2 { font-family: 'Fredoka One', cursive; color: #ff4757; margin-bottom: 10px; }
+        p { font-size: 1.05rem; line-height: 1.5; margin-bottom: 15px;}
+        
+        .nepali-text { color: #ff6b81; font-weight: bold; font-style: italic; }
+        .romantic-text { color: #d63031; font-size: 1.1rem; font-weight: 600; line-height: 1.6; }
+
+        input[type="text"] {
+            padding: 12px; width: 80%;
+            border: 2px solid #ff4757; border-radius: 10px;
+            font-size: 16px; margin-top: 10px; text-align: center;
+        }
+
+        button {
+            background-color: #ff4757; color: white;
+            border: none; padding: 12px 25px;
+            border-radius: 25px; font-size: 16px;
+            font-weight: bold; cursor: pointer;
+            margin: 10px 5px; box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
+            transition: transform 0.2s;
+        }
+        button:active { transform: scale(0.95); }
+
+        /* Hide all levels initially except level 1 */
+        #level-2, #level-3, #level-4, #level-5, #level-6, #level-7 { display: none; }
+
+        /* Game 1: Momo Sprint */
+        #momo-target {
+            font-size: 55px; position: absolute;
+            cursor: pointer; user-select: none;
+            transition: all 0.2s ease; display: none;
+            z-index: 20;
+        }
+        .score-board { font-weight: bold; color: #ff4757; font-size: 1.2rem; }
+        #timer { color: #e17055; font-size: 1.5rem; font-weight: bold; }
+
+        /* Game 2: Memory Pattern */
+        .memory-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            margin: 20px auto; width: 200px;
+        }
+        .mem-btn {
+            height: 90px; border-radius: 15px; border: none; opacity: 0.5;
+            transition: opacity 0.2s, transform 0.1s; cursor: pointer;
+        }
+        .mem-btn.active { opacity: 1; transform: scale(1.05); box-shadow: 0 0 15px rgba(0,0,0,0.3); }
+        #btn-1 { background-color: #ff4757; }
+        #btn-2 { background-color: #1e90ff; }
+        #btn-3 { background-color: #2ed573; }
+        #btn-4 { background-color: #ffa502; }
+
+        /* Falling Hearts */
+        .heart {
+            position: absolute; font-size: 24px; color: #ff4757;
+            animation: fall linear infinite; z-index: 1;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hidden Audio Player -->
+    <!-- This is a free romantic chillhop track, it will play automatically after she clicks unlock -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- LEVEL 1: PASSWORD -->
+    <div class="container" id="level-1">
+        <h1>Halt! 🛑</h1>
+        <p><strong>Hint:</strong> My favorite Nepali snack, and my nickname for a very pretty, slightly short girl? 😉</p>
+        <input type="text" id="password" placeholder="Enter secret word...">
+        <br>
+        <button onclick="checkPassword()">Unlock</button>
+        <p id="error-msg" style="color: red; display: none; font-size: 0.9rem;">Wrong password, Fuchchi! Try again.</p>
+    </div>
+
+    <!-- LEVEL 2: TRICK QUESTION -->
+    <div class="container" id="level-2">
+        <h2>Security Question 🕵️‍♀️</h2>
+        <p>To proceed, you must answer honestly:</p>
+        <p><strong>Who is the most gorgeous, breathtaking girl in the entire world?</strong></p>
+        <div style="position: relative; height: 150px;">
+            <button onclick="nextLevel(3)">Sushmita 💖</button>
+            <button id="no-btn" ontouchstart="dodgeButton()" onmouseover="dodgeButton()">Someone else</button>
+        </div>
+    </div>
+
+    <!-- LEVEL 3: SPEED GAME -->
+    <div class="container" id="level-3" style="height: 350px;">
+        <h2>Game 1: Momo Sprint! 🥟</h2>
+        <p>You have <strong>12 seconds</strong> to catch 15 Momos. Don't be slow!</p>
+        <p id="timer">12.0s</p>
+        <p class="score-board">Caught: <span id="score">0</span>/15</p>
+        <button id="start-btn" onclick="startTimerGame()">Start Game</button>
+        <div id="momo-target" onmousedown="catchMomo(event)" ontouchstart="catchMomo(event)">🥟</div>
+    </div>
+
+    <!-- LEVEL 4: MEMORY GAME -->
+    <div class="container" id="level-4">
+        <h2>Game 2: Heart Memory 🧠</h2>
+        <p>Watch the pattern and repeat it! Complete 4 rounds to pass.</p>
+        <p class="score-board" id="memory-status">Round 1</p>
+        <div class="memory-grid">
+            <button class="mem-btn" id="btn-1" onclick="handleMemoryClick(1)"></button>
+            <button class="mem-btn" id="btn-2" onclick="handleMemoryClick(2)"></button>
+            <button class="mem-btn" id="btn-3" onclick="handleMemoryClick(3)"></button>
+            <button class="mem-btn" id="btn-4" onclick="handleMemoryClick(4)"></button>
+        </div>
+        <button id="start-mem-btn" onclick="startMemoryGame()">Start Memory Game</button>
+    </div>
+
+    <!-- LEVEL 5: WORD SCRAMBLE -->
+    <div class="container" id="level-5">
+        <h2>Game 3: The Riddle 🧩</h2>
+        <p>Unscramble these letters to unlock the vault:</p>
+        <h1 style="letter-spacing: 5px; color: #333;">I H C H U F C</h1>
+        <input type="text" id="scramble-ans" placeholder="Type answer here...">
+        <br>
+        <button onclick="checkScramble()">Submit</button>
+        <p id="scramble-error" style="color: red; display: none; font-size: 0.9rem;">Nope! Hint: It's what I call you! 😉</p>
+    </div>
+
+    <!-- LEVEL 6: THE COMPLIMENTS -->
+    <div class="container" id="level-6">
+        <h2>You Survived! 🎉</h2>
+        <p>Since April 2026, you've completely stolen my heart. Before your final gift, I need you to know:</p>
+        <p class="romantic-text">
+            I am absolutely obsessed with every detail about you. From those deep, beautiful eyes to your incredibly sexy lips that I crave kissing every single day. 
+        </p>
+        <p class="romantic-text">
+            I love your cute height, your gorgeous smile, and the way your voice sounds. You are absolute perfection to me, inside and out.
+        </p>
+        <p class="nepali-text">Timro muskan dherai ramro cha. (Your smile is so beautiful).</p>
+        <button onclick="nextLevel(7)">Open My Gift 🎁</button>
+    </div>
+
+    <!-- LEVEL 7: GRAND FINALE -->
+    <div class="container" id="level-7">
+        <h1>Happy Birthday, Sushmita! 🎂</h1>
+        <p class="nepali-text">Janmadin ko Subhakamana, meri mayalu! 🎉</p>
+        <p>Long distance is hard, but loving you is the easiest thing I've ever done. You make my world so much brighter.</p>
+        <p>I hope your day is as breathtaking as you are. I'm counting down the days until I can celebrate with you in person, hold you tight, and never let go.</p>
+        <h2>I love you endlessly! ❤️</h2>
+    </div>
+
+    <script>
+        // Music & Level Management
+        function nextLevel(level) {
+            document.querySelectorAll('.container').forEach(el => el.style.display = 'none');
+            document.getElementById('level-' + level).style.display = 'block';
+            if(level === 7) createHearts();
+        }
+
+        // Level 1: Password & Play Music
+        function checkPassword() {
+            let pass = document.getElementById('password').value.trim().toLowerCase();
+            if (pass === 'momo') {
+                document.getElementById('bg-music').play(); // STARTS MUSIC HERE
+                nextLevel(2);
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        // Level 2: Dodging Button
+        function dodgeButton() {
+            let btn = document.getElementById('no-btn');
+            let container = document.getElementById('level-2');
+            let maxX = container.clientWidth - btn.clientWidth;
+            let maxY = 80; 
+            btn.style.position = 'absolute';
+            btn.style.left = Math.random() * maxX + 'px';
+            btn.style.top = Math.random() * maxY + 'px';
+        }
+
+        // Level 3: Speed Game Logic
+        let score = 0; let timeLeft = 12.0; let gameInterval;
+        let momo = document.getElementById('momo-target'); let gameActive = false;
+
+        function startTimerGame() {
+            document.getElementById('start-btn').style.display = 'none';
+            momo.style.display = 'block';
+            score = 0; timeLeft = 12.0;
+            document.getElementById('score').innerText = score;
+            gameActive = true; moveMomo();
+
+            gameInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                document.getElementById('timer').innerText = timeLeft.toFixed(1) + 's';
+                if (timeLeft <= 0) {
+                    clearInterval(gameInterval); gameActive = false; momo.style.display = 'none';
+                    if (score < 15) {
+                        alert("Time's up, Fuchchi! Too slow! Try again.");
+                        document.getElementById('start-btn').style.display = 'inline-block';
+                        document.getElementById('timer').innerText = "12.0s";
+                    }
+                }
+            }, 100);
+        }
+
+        function moveMomo() {
+            let container = document.getElementById('level-3');
+            let maxX = container.clientWidth - 70; let maxY = container.clientHeight - 150; 
+            momo.style.left = (Math.random() * maxX) + 'px';
+            momo.style.top = (Math.random() * maxY + 100) + 'px';
+        }
+
+        function catchMomo(e) {
+            if(e) e.preventDefault(); 
+            if (!gameActive) return;
+            score++; document.getElementById('score').innerText = score;
+            if (score >= 15) {
+                clearInterval(gameInterval); gameActive = false; momo.style.display = 'none';
+                alert("Phew! You passed Game 1. Let's see if your brain is as fast as your fingers...");
+                nextLevel(4);
+            } else {
+                moveMomo();
+            }
+        }
+
+        // Level 4: Memory Game (Simon Says)
+        let memorySeq = []; let playerSeq = []; let memRound = 1;
+
+        function startMemoryGame() {
+            document.getElementById('start-mem-btn').style.display = 'none';
+            memorySeq = []; playerSeq = []; memRound = 1;
+            nextMemoryRound();
+        }
+
+        function nextMemoryRound() {
+            playerSeq = [];
+            document.getElementById('memory-status').innerText = "Round " + memRound + " - Watch closely!";
+            memorySeq.push(Math.floor(Math.random() * 4) + 1);
+            playMemorySequence();
+        }
+
+        function playMemorySequence() {
+            let i = 0;
+            let interval = setInterval(() => {
+                flashButton(memorySeq[i]);
+                i++;
+                if (i >= memorySeq.length) {
+                    clearInterval(interval);
+                    setTimeout(() => { document.getElementById('memory-status').innerText = "Your turn!"; }, 500);
+                }
+            }, 800);
+        }
+
+        function flashButton(num) {
+            let btn = document.getElementById('btn-' + num);
+            btn.classList.add('active');
+            setTimeout(() => { btn.classList.remove('active'); }, 400);
+        }
+
+        function handleMemoryClick(num) {
+            if(document.getElementById('memory-status').innerText !== "Your turn!") return;
+            
+            flashButton(num);
+            playerSeq.push(num);
+            
+            let currentIndex = playerSeq.length - 1;
+            if (playerSeq[currentIndex] !== memorySeq[currentIndex]) {
+                alert("Wrong pattern! Focus, beautiful! Starting over...");
+                document.getElementById('start-mem-btn').style.display = 'block';
+                document.getElementById('memory-status').innerText = "Game Over";
+                return;
+            }
+
+            if (playerSeq.length === memorySeq.length) {
+                if (memRound === 4) {
+                    setTimeout(() => {
+                        alert("Brain and beauty! You passed Game 2. One last puzzle...");
+                        nextLevel(5);
+                    }, 500);
+                } else {
+                    memRound++;
+                    document.getElementById('memory-status').innerText = "Correct! Get ready...";
+                    setTimeout(nextMemoryRound, 1000);
+                }
+            }
+        }
+
+        // Level 5: Word Scramble
+        function checkScramble() {
+            let ans = document.getElementById('scramble-ans').value.trim().toLowerCase();
+            if (ans === 'fuchchi') {
+                nextLevel(6);
+            } else {
+                document.getElementById('scramble-error').style.display = 'block';
+            }
+        }
+
+        // Level 7: Hearts Animation
+        function createHearts() {
+            setInterval(() => {
+                let heart = document.createElement('div');
+                heart.innerHTML = '💖'; heart.classList.add('heart');
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+                document.body.appendChild(heart);
+                setTimeout(() => heart.remove(), 5000);
+            }, 250);
+        }
+    </script>
+</body>
+</html>
+
